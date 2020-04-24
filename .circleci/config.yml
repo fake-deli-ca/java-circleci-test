@@ -74,7 +74,7 @@ jobs:
 
 
 ##"./gradlew upload"コマンドによるビルド成果物のNexus（SNAPSHOT）登録を行う。
-##issueブランチmerge後のmasterブランチに対してタグ付けを行う。
+##staging時、最新のmasterブランチに対してタグ付けを行う。
   nexus_snapshot:
     docker:
       - image: circleci/openjdk:latest
@@ -96,7 +96,7 @@ jobs:
             ./gradlew clean build publish
 
       - run:
-          name: make issue tags
+          name: make staging tags
           command: |
             export VERSION=`./gradlew checkVersion | grep -E [0-9]+\.[0-9]+\.[0-9]+`
             git tag "ver_${VERSION}" origin/master
@@ -126,7 +126,7 @@ jobs:
 ##連携先のECSにSCPで修正済みのjarファイルを配布する。
 ##連携先のECSへのSSHでjarファイル起動Shellを置き換える。
 ##"systemctl restart"コマンドでサービスを再起動する
-##最新のmasterブランチに対してタグ付けを行う。
+##リリース元のmasterブランチに対してタグ付けを行う。
   deploy:
      docker:
        - image: circleci/openjdk:latest
@@ -192,7 +192,9 @@ jobs:
            name: make release tags
            command: |
              export VERSION=`./gradlew checkVersion | grep -E [0-9]+\.[0-9]+\.[0-9]+`
-             git tag "ver_${VERSION}" origin/master
+             export STAGING=${VERSION:0:-7}
+             echo "ver_${STAGING}SNAPSHOT"
+             git tag "ver_${VERSION}" "ver_${STAGING}SNAPSHOT"
              git push origin "ver_${VERSION}"
 
 
@@ -207,6 +209,7 @@ workflows:
               only:
                 - /^issue.+/
                 - master
+                - release-staging
                 - release
           post-steps:
             - store_artifacts:
@@ -222,11 +225,10 @@ workflows:
       - nexus_snapshot:
           requires:
             - build
-            - sonarqube
           filters:
             branches:
               only:
-                - master
+                - release-staging
       - nexus_release:
           requires:
             - build
