@@ -144,58 +144,61 @@ jobs:
        # Download and cache dependencies
        - restore_cache:
            keys:
-             - v1-dependencies-{{ checksum "build.gradle" }}
+             - v2-dependencies-{{ checksum "build.gradle" }}
              # fallback to using the latest cache if no exact match is found
-             - v1-dependencies-
+             - v2-dependencies-
 
        - run: chmod +x ./gradlew
        - run: ./gradlew build
 
        # check object
-       - run: ls -l ~/repo/build/libs/
+       - run: ls -l build/libs/
+       - store_artifacts:
+          path: build/reports
+       - store_test_results:
+          path: build/test-results/test
        
        ##実運用では以下アプリケーション更新は、Terraformによるインフラ構築後に実施する。
        #upload app resource to ECS
-       - add_ssh_keys:
-           fingerprints:
-             - $FINGERPRINT
-             
-       - run:  
-           command: |  
-             ssh-keyscan -p 22 ${STAGING_SERVER_IP} >> ~/.ssh/known_hosts  
-
-       - run:
-           name: release app
-           command: |
-             scp -r -o StrictHostKeyChecking=no -o UserKnownHostsFile=no ~/repo/build/libs/*.jar root@${STAGING_SERVER_IP}:~/RESOURCE/.
-
-       - run:
-           name: update app shell
-           command: |
-             scp -r -o StrictHostKeyChecking=no -o UserKnownHostsFile=no ./shell/${APP_SHELL}.sh root@${STAGING_SERVER_IP}:~/.
-
-       - run:
-           name: change permission app shell
-           command: |
-             ssh -tt root@${STAGING_SERVER_IP} \<< EOF
-               cd ~
-               chmod +x ${APP_SHELL}.sh
-               exit
-             EOF
-
-       - run:
-           name: restart alibaba app
-           command: |
-             ssh -tt root@${STAGING_SERVER_IP} systemctl restart ${APP_SHELL}
-
+#       - add_ssh_keys:
+#           fingerprints:
+#             - $FINGERPRINT
+#             
+#       - run:  
+#           command: |  
+#             ssh-keyscan -p 22 ${STAGING_SERVER_IP} >> ~/.ssh/known_hosts  
+#
+#       - run:
+#           name: release app
+#           command: |
+#             scp -r -o StrictHostKeyChecking=no -o UserKnownHostsFile=no ~/repo/build/libs/*.jar root@${STAGING_SERVER_IP}:~/RESOURCE/.
+##
+#       - run:
+#           name: update app shell
+#           command: |
+#             scp -r -o StrictHostKeyChecking=no -o UserKnownHostsFile=no ./shell/${APP_SHELL}.sh root@${STAGING_SERVER_IP}:~/.
+#
+#       - run:
+#           name: change permission app shell
+#           command: |
+#             ssh -tt root@${STAGING_SERVER_IP} \<< EOF
+#               cd ~
+#               chmod +x ${APP_SHELL}.sh
+#               exit
+#             EOF
+##
+#       - run:
+#           name: restart alibaba app
+#           command: |
+#             ssh -tt root@${STAGING_SERVER_IP} systemctl restart ${APP_SHELL}
+#
        - run:
            name: make release tags
-           command: |
-             export VERSION=`./gradlew checkVersion | grep -E [0-9]+\.[0-9]+\.[0-9]+`
-             export STAGING=${VERSION:0:-7}
-             echo "ver_${STAGING}SNAPSHOT"
-             git tag "ver_${VERSION}" "ver_${STAGING}SNAPSHOT"
-             git push origin "ver_${VERSION}"
+           command: 
+             - go ghr github.com/tcnksm/ghr
+             - ghr -t $GITHUB_TOKEN -u $USERNAME8 -r $CIRCLE_PROJECT_REPONAME -n "$CIRCLE_TAG" -b "Released on $(date +%Y-%m-%d)" "$CIRCLE_TAG" build/libs/
+             
+             
 
 
 ##以下Workflow※各ステップの実行順と対象ブランチを規定
@@ -214,14 +217,14 @@ workflows:
           post-steps:
             - store_artifacts:
                 path: ~/repo/build/reports/
-      - sonarqube:
-          requires:
-            - build
-          filters:
-            branches:
-              only:
-                - /^issue.+/
-                - master
+   #   - sonarqube:
+   #       requires:
+   #         - build
+   #       filters:
+   #         branches:
+   #           only:
+   #             - /^issue.+/
+   #             - master
       - nexus_snapshot:
           requires:
             - build
@@ -239,10 +242,10 @@ workflows:
       - deploy:
           requires:
             - build
-            - nexus_release
+          #  - nexus_release
           filters:
             branches:
-              only: release
+              only: master
 #  nightly:
 #    triggers:
 #      - schedule:
