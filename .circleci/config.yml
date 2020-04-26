@@ -139,10 +139,11 @@ jobs:
        TERM: dumb
 
      steps:
-      - run: |
+       - run: |
           curl -L -o /tmp/ghr.tar.gz https://github.com/tcnksm/ghr/releases/download/v0.13.0/ghr_v0.13.0_linux_amd64.tar.gz
           tar -C /tmp -zxf /tmp/ghr.tar.gz
           mv /tmp/ghr_v0.13.0_linux_amd64/ghr $HOME/bin/ghr
+
        - checkout
 
        # Download and cache dependencies
