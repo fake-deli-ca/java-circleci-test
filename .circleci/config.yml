@@ -139,6 +139,10 @@ jobs:
        TERM: dumb
 
      steps:
+      - run: |
+          curl -L -o /tmp/ghr.tar.gz https://github.com/tcnksm/ghr/releases/download/v0.13.0/ghr_v0.13.0_linux_amd64.tar.gz
+          tar -C /tmp -zxf /tmp/ghr.tar.gz
+          mv /tmp/ghr_v0.13.0_linux_amd64/ghr $HOME/bin/ghr
        - checkout
 
        # Download and cache dependencies
@@ -195,8 +199,8 @@ jobs:
        - run:
            name: make release tags
            command: |
-              go ghr github.com/tcnksm/ghr
-              ghr -t $GITHUB_TOKEN -u $USERNAME8 -r $CIRCLE_PROJECT_REPONAME -n "$CIRCLE_TAG" -b "Released on $(date +%Y-%m-%d)" "$CIRCLE_TAG" build/libs/
+#              go ghr github.com/tcnksm/ghr
+              ghr -t $GITHUB_TOKEN -u $USERNAME -r $CIRCLE_PROJECT_REPONAME -n "$CIRCLE_TAG" -b "Released on $(date +%Y-%m-%d)" "$CIRCLE_TAG" build/libs/
              
              
 
