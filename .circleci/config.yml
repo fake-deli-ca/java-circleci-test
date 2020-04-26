@@ -252,8 +252,8 @@ workflows:
             - build
           #  - nexus_release
           filters:
-            branches:
-              only: master
+            tags:
+              only: /^v.*/
 #  nightly:
 #    triggers:
 #      - schedule:
