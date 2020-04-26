@@ -140,9 +140,9 @@ jobs:
 
      steps:
        - run: |
-          curl -L -o /tmp/ghr.tar.gz https://github.com/tcnksm/ghr/releases/download/v0.13.0/ghr_v0.13.0_linux_amd64.tar.gz
-          tar -C /tmp -zxf /tmp/ghr.tar.gz
-          mv /tmp/ghr_v0.13.0_linux_amd64/ghr $HOME/bin/ghr
+           curl -L -o /tmp/ghr.tar.gz https://github.com/tcnksm/ghr/releases/download/v0.13.0/ghr_v0.13.0_linux_amd64.tar.gz
+           tar -C /tmp -zxf /tmp/ghr.tar.gz
+           mv /tmp/ghr_v0.13.0_linux_amd64/ghr $HOME/bin/ghr
 
        - checkout
 
@@ -159,9 +159,9 @@ jobs:
        # check object
        - run: ls -l build/libs/
        - store_artifacts:
-          path: build/reports
+           path: build/reports
        - store_test_results:
-          path: build/test-results/test
+           path: build/test-results/test
        
        ##実運用では以下アプリケーション更新は、Terraformによるインフラ構築後に実施する。
        #upload app resource to ECS
@@ -201,7 +201,7 @@ jobs:
            name: make release tags
            command: |
 #              go ghr github.com/tcnksm/ghr
-              ghr -t $GITHUB_TOKEN -u $USERNAME -r $CIRCLE_PROJECT_REPONAME -n "$CIRCLE_TAG" -b "Released on $(date +%Y-%m-%d)" "$CIRCLE_TAG" build/libs/
+             ghr -t $GITHUB_TOKEN -u $USERNAME -r $CIRCLE_PROJECT_REPONAME -n "$CIRCLE_TAG" -b "Released on $(date +%Y-%m-%d)" "$CIRCLE_TAG" build/libs/
              
              
 
