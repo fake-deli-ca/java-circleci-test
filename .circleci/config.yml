@@ -200,7 +200,6 @@ jobs:
        - run:
            name: make release tags
            command: |
-#              go ghr github.com/tcnksm/ghr
              ghr -t $GITHUB_TOKEN -u $USERNAME -r $CIRCLE_PROJECT_REPONAME -n "$CIRCLE_TAG" -b "Released on $(date +%Y-%m-%d)" "$CIRCLE_TAG" build/libs/
              
              
