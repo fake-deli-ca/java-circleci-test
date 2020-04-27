@@ -203,7 +203,7 @@ jobs:
        - run:
            name: make release tags
            command: |
-             ghr -t $GITHUB_TOKEN -u $USERNAME -r $CIRCLE_PROJECT_REPONAME -n "v0.1" -b "Released on $(date +%Y-%m-%d)"  build/libs/
+             ghr -t $GITHUB_TOKEN -u $USERNAME -r $CIRCLE_PROJECT_REPONAME -n "v0.1" -b "Released on $(date +%Y-%m-%d)" v0.1  build/libs/
              
              
 
