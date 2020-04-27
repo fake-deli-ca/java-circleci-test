@@ -129,7 +129,7 @@ jobs:
 ##リリース元のmasterブランチに対してタグ付けを行う。
   deploy:
      docker:
-       - image: circleci/openjdk:latest
+       - image: circleci/golang:1.14.2-browsers
 
      working_directory: ~/repo
 
@@ -203,8 +203,7 @@ jobs:
        - run:
            name: make release tags
            command: |
-             export CIRCLE_TAG=v0.1
-             ghr -t $GITHUB_TOKEN -u $USERNAME -r $CIRCLE_PROJECT_REPONAME -n "$CIRCLE_TAG" -b "Released on $(date +%Y-%m-%d)" "$CIRCLE_TAG" build/libs/
+             ghr -t $GITHUB_TOKEN -u $USERNAME -r $CIRCLE_PROJECT_REPONAME -n "v0.1" -b "Released on $(date +%Y-%m-%d)" v0.1  build/libs/
              
              
 
