@@ -206,7 +206,7 @@ jobs:
              echo "${CIRCLE_TAG}\n"
              if [ ${CIRCLE_TAG} ]; then
                go get github.com/tcnksm/ghr
-               ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -n ${CIRCLE_TAG} -b "Released on $(date +%Y-%m-%d)" -delete ${CIRCLE_TAG} build/libs/a
+               ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -n ${CIRCLE_TAG} -b "Released on $(date +%Y-%m-%d)" -delete ${CIRCLE_TAG} build/libs/
              fi
              
              
