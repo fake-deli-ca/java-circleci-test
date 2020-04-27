@@ -11,7 +11,7 @@ jobs:
   build:
      docker:
        # specify the version you desire here
-       - image: circleci/openjdk:latest
+       - image: circleci/openjdk:11
 
      # Specify service dependencies here if necessary
      # CircleCI maintains a library of pre-built images
@@ -31,9 +31,9 @@ jobs:
        # Download and cache dependencies
        - restore_cache:
            keys:
-             - v1-dependencies-{{ checksum "build.gradle" }}
+             - v2-dependencies-{{ checksum "build.gradle" }}
              # fallback to using the latest cache if no exact match is found
-             - v1-dependencies-
+             - v2-dependencies-
 
 
        - run: chmod +x ./gradlew
@@ -43,7 +43,7 @@ jobs:
        - save_cache:
            paths:
              - ~/.gradle
-           key: v1-dependencies-{{ checksum "build.gradle" }}
+           key: v2-dependencies-{{ checksum "build.gradle" }}
 
 
 ##"./gradlew sonarqube"コマンドによるSonerQubeサイトで設定した検証の実施と結果連携を行う。
@@ -139,13 +139,13 @@ jobs:
        TERM: dumb
 
      steps:
-       - run: |
-           mkdir -p $HOME/bin
-           echo 'export PATH="$HOME/bin:$PATH"' >> $BASH_ENV
-       - run: |
-           curl -L -o /tmp/ghr.tar.gz https://github.com/tcnksm/ghr/releases/download/v0.13.0/ghr_v0.13.0_linux_amd64.tar.gz
-           tar -C /tmp -zxf /tmp/ghr.tar.gz
-           mv /tmp/ghr_v0.13.0_linux_amd64/ghr $HOME/bin/ghr
+       #- run: |
+       #    mkdir -p $HOME/bin
+       #    echo 'export PATH="$HOME/bin:$PATH"' >> $BASH_ENV
+       #- run: |
+       #    curl -L -o /tmp/ghr.tar.gz https://github.com/tcnksm/ghr/releases/download/v0.13.0/ghr_v0.13.0_linux_amd64.tar.gz
+       #    tar -C /tmp -zxf /tmp/ghr.tar.gz
+       #    mv /tmp/ghr_v0.13.0_linux_amd64/ghr $HOME/bin/ghr
 
        - checkout
 
@@ -201,9 +201,13 @@ jobs:
 #             ssh -tt root@${STAGING_SERVER_IP} systemctl restart ${APP_SHELL}
 #
        - run:
-           name: make release tags
+           name: github release
            command: |
-             ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -n "v0.1" -b "Released on $(date +%Y-%m-%d)" -delete "v0.1" build/libs/
+             echo "${CIRCLE_TAG}\n"
+             if [ ${CIRCLE_TAG} ]; then
+               go get github.com/tcnksm/ghr
+               ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -n ${CIRCLE_TAG} -b "Released on $(date +%Y-%m-%d)" -delete ${CIRCLE_TAG} build/libs/a
+             fi
              
              
 
