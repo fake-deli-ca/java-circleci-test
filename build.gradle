@@ -39,7 +39,7 @@ sonarqube {
     }
 }
 
-//基本構成は下記を参照
+//
 //https://docs.gradle.org/current/userguide/publishing_maven.html#publishing_maven:complete_example
 //http://mike-neck.github.io/blog/2013/06/19/publish-maven-artifact-with-sign-files-1/
 publishing {
