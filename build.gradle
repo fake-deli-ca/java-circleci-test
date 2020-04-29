@@ -14,7 +14,7 @@ plugins {
 }
 
 group "gr.di.uoa.pliakos.databasesystems"
-^version "0.9-SNAPSHOT"
+version "1.0.0-SNAPSHOT"
 archivesBaseName = "alibaba-research-circleCI"
 
 bootJar {
