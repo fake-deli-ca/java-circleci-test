@@ -9,6 +9,6 @@ public class StudentServiceTest {
     //@Ignore
     @Test
     public void testAdd() {
-    	assertEquals(10, 10);
+    	assertEquals(15, 15);
     	}
 	}
